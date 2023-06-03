@@ -200,7 +200,7 @@
                         <div class="col-12 p-3 p-md-5 ">
 
                             <h5 class="mb-4 ">Contact information</h5>
-                            <form action="https://api.web3forms.com/submit" method="POST">
+                            <form id="waitlistform" action="https://api.web3forms.com/submit" method="POST">
                                 <input type="hidden" name="access_key" value="1a38584c-62c2-4bf2-b0db-b3d8fc718471">
 
                                 <div class="form-group ">
@@ -214,9 +214,12 @@
                                 </div>
                                 <div class="form-group ">
                                     <label>Phone number</label>
-                                    <input type="tel" name="phone" class="form-control " placeholder="Your Phone number "></div>
+                                    <input type="tel" name="phone" class="form-control " placeholder="9999999999" pattern="[0-9]{10}"></div>
                                 <div class="h-captcha" data-captcha="true"></div>
                                 <button type="submit" class="btn btn-lg btn-success w-100 mt-4 ">Sign Up</button>
+                                <div class="mt-4 text-center">
+                                    <p class="text-base text-center text-gray-400" id="result"></p>
+                                </div>
                             </form>
 
                         </div>
@@ -376,6 +379,48 @@
                 "background_size": "cover"
             }
 
+        });
+    </script>
+    <script>
+        const form = document.getElementById("waitlistform");
+        const result = document.getElementById("result");
+        form.addEventListener("submit", function(e) {
+            const formData = new FormData(form);
+            e.preventDefault();
+            var object = {};
+            formData.forEach((value, key) => {
+                object[key] = value;
+            });
+            var json = JSON.stringify(object);
+            result.innerHTML = "Please wait...";
+            fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json"
+                },
+                body: json
+            }).then(async(response) => {
+                let json = await response.json();
+                if (response.status == 200) {
+                    result.innerHTML = "Thanks for joining our waitlist!";
+                    result.classList.remove("text-gray-500");
+                    result.classList.add("text-green-500");
+                } else {
+                    console.log(response);
+                    result.innerHTML = json.message;
+                    result.classList.remove("text-gray-500");
+                    result.classList.add("text-red-500");
+                }
+            }).catch((error) => {
+                console.log(error);
+                result.innerHTML = "Something went wrong!";
+            }).then(function() {
+                form.reset();
+                setTimeout(() => {
+                    result.style.display = "none";
+                }, 5000);
+            });
         });
     </script>
 </body>
