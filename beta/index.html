@@ -403,7 +403,7 @@
             }).then(async(response) => {
                 let json = await response.json();
                 if (response.status == 200) {
-                    result.innerHTML = "Thanks for joining our waitlist!";
+                    result.innerHTML = json.message;
                     result.classList.remove("text-gray-500");
                     result.classList.add("text-green-500");
                 } else {
